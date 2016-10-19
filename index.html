@@ -14,12 +14,21 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$("form").submit(function(){
-					   var login = $("#login").val();
-					   var senha = $("#senha").val();
-					   if(login == "" || senha == ""){
-					   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
-					   	 event.preventDefault();
-					   }
+		   var login = $("#login").val();
+		   var senha = $("#senha").val();
+		   if(login == "" || senha == ""){
+		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
+		   	 event.preventDefault();
+		   }
+		    $.post("dxxxxxx",
+		    {
+		        login: login,
+		        senha: senha
+		    },
+		    function(data, status){
+		        alert("Data: " + data + "\nStatus: " + status);
+		    });
+
 		});
 	});
 	</script>
