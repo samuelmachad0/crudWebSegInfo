@@ -20,15 +20,12 @@
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
 		   }
-		    $.post("dxxxxxx",
-		    {
-		        login: login,
-		        senha: senha
-		    },
-		    function(data, status){
-		        alert("Data: " + data + "\nStatus: " + status);
-		    });
-
+		   console.log("macumba");
+		   $.post( "http://simuleagora.com/checkLogin.php", { login: login, senha: senha })
+			  .done(function( data ) {
+				alert( "Data Loaded: " + data.login );
+		   });
+			event.preventDefault();
 		});
 	});
 	</script>
