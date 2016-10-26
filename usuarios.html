@@ -24,7 +24,8 @@
 	<meta charset="utf-8">
 	<script type="text/javascript">
 	function getUsuarios(){
-		$('#tabela').empty("");
+
+		$("#usuario_id").empty("");
 		 $.get( "http://simuleagora.com/listUsuarios.php")
 			  .done(function( data ) {
 				$( data).each( function( index, data ) {
@@ -42,10 +43,14 @@
 
 	}
 	function editar(usuario_id,nome){
-	
+		$('#tabela').empty("");
+		$("#login").empty("");
+		$("#senha").empty("");
+
 		console.log('Pediram pra eu editar o ' + usuario_id);
 		$("#login").val(nome);
 		$("#usuario_id").val(usuario_id);
+		$("#senha").val("123456");
 		$('#modalEditar').modal('show');  
 
 
