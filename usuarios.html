@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Página Web</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/sweetalert.css">
+		<link rel="stylesheet" href="css/font-awesome.css">
+	<style type="text/css">
+		.nigga {
+			color: black;
+		}
+		.cursor {
+			cursor: pointer;
+		}
+		.fundomodal{
+			background-color: white;
+		}
+	</style>
+	<script src="js/jquery-3.1.1.min.js" ></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="js/bootstrap.min.js" ></script>
+	<script src="js/sweetalert.min.js" ></script>
+	<meta charset="utf-8">
+	<script type="text/javascript">
+	function editar(usuario_id){
+		console.log('Pediram pra eu editar o ' + usuario_id);
+		$('#modalEditar').modal('show');   
+
+	}
+	function remover(usuario_id){
+		console.log('Pediram pra eu remover o ' + usuario_id);
+	}
+	$(document).ready(function(){
+
+
+			 $.get( "http://simuleagora.com/listUsuarios.php")
+			  .done(function( data ) {
+				$( data).each( function( index, data ) {
+				   $('#tabela').append(
+				   	'<tr> \
+				   		<td>'+data.usuario_id+'</td> \
+				   		<td>'+data.nome+'</td> \
+				   		<td> \
+				   			<i onclick="editar('+data.usuario_id+')" class="fa fa-pencil-square-o fa-2x cursor" aria-hidden="true"> \
+				   			</i>        <i class="fa fa-trash fa-2x cursor" onclick="remover('+data.usuario_id+')" aria-hidden="true"></i> \
+				   		</td> \
+				   	</tr>');
+				});	 
+		   });
+	});
+	</script>
+	</head>
+<body>
+		<div class="container">	
+				<div class="row">
+					<div class="col-md-6 col-md-offset-2" >
+					<a href="" class="btn btn-warning nigga">Novo Usuário</a><br><br>
+
+					<div class="table-responsive">
+							<table id="tabela" class="table table-hover table-striped table-bordered">
+								<tr>
+									<th>ID</th>
+									<th>Nome</th>
+									<th>Ação</th>
+								</tr>
+							</table>
+							</div>
+					</div>
+				</div>
+		</div>	
+
+
+<!-- Small modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button> -->
+
+<div id="modalEditar" class="modal fade bs-example-modal-md fundomodal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel ">
+  <div class="modal-dialog modal-md " role="document">
+    <div class="modal-content ">
+      <form id="formulario" method="POST" >
+								<div class="col-md-12">
+									<div class="input-group">
+									  <label>Login</label>
+									  <input type="text" id="login" name="login" class="form-control" placeholder="Digite seu nome">
+									</div>
+									<div class="input-group">
+									  <label>Senha</label>
+									  <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha">
+									</div><br>
+									<input type="submit" name="Entrar" class="btn btn-primary">
+								</div>
+	</form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

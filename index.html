@@ -19,11 +19,23 @@
 		   if(login == "" || senha == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
+		   	 return 0;
 		   }
-		   console.log("macumba");
+		 
 		   $.post( "http://simuleagora.com/checkLogin.php", { login: login, senha: senha })
 			  .done(function( data ) {
-				alert( "Data Loaded: " + data.login );
+			  		if(data.status == 'erro'){
+			  			sweetAlert("Oops...", "USUÁRIO OU SENHA INVÁLIDOS!", "error");
+		   	 			
+			  		} else {
+			  			swal({   title: "SUCESSO!",   text: "Você será redirecionado em 3 segundos.",   timer: 3000,   showConfirmButton: false });
+			  			event.preventDefault();
+			  			setTimeout(function (self) { 
+							window.location.href = 'usuarios.html';
+					    }, 3000, this); 
+			  			
+			  		}
+			   	   
 		   });
 			event.preventDefault();
 		});
