@@ -23,6 +23,12 @@
 	<script src="js/sweetalert.min.js" ></script>
 	<meta charset="utf-8">
 	<script type="text/javascript">
+	function cadastrar(){
+		$("#loginCadastro").empty("");
+		$("#senhaCadastro").empty("");
+		$('#modalCadastro').modal('show'); 
+		 event.preventDefault();
+	}
 	function getUsuarios(){
 
 		$("#usuario_id").empty("");
@@ -35,7 +41,7 @@
 				   		<td>'+data.nome+'</td> \
 				   		<td> \
 				   			<i onclick=editar('+data.usuario_id+',"'+data.nome+'") class="fa fa-pencil-square-o fa-2x cursor" aria-hidden="true"> \
-				   			</i>        <i class="fa fa-trash fa-2x cursor" onclick="remover('+data.usuario_id+')" aria-hidden="true"></i> \
+				   			</i>        <i class="fa fa-trash fa-2x cursor" onclick=remover('+data.usuario_id+',"'+data.nome+'") aria-hidden="true"></i> \
 				   		</td> \
 				   	</tr>');
 				});	 
@@ -43,29 +49,52 @@
 
 	}
 	function editar(usuario_id,nome){
-		$('#tabela').empty("");
-		$("#login").empty("");
-		$("#senha").empty("");
+	
+		$("#loginEditar").empty("");
+		$("#senhaEditar").empty("");
 
 		console.log('Pediram pra eu editar o ' + usuario_id);
-		$("#login").val(nome);
+		$("#loginEditar").val(nome);
 		$("#usuario_id").val(usuario_id);
-		$("#senha").val("123456");
-		$('#modalEditar').modal('show');  
-
-
+		$("#senhaEditar").val("123456");
+		$('#modalEditar').modal('show'); 
 	}
-	function remover(usuario_id){
-		console.log('Pediram pra eu remover o ' + usuario_id);
+	function remover(usuario_id,nome){
+			swal({
+			  title: "Quer mesmo remover o usuário "+nome+" ?",
+			  text: "Não será possível recuperar este registro",
+			  type: "warning",
+			  showCancelButton: true,
+			  closeOnConfirm: false,
+			  confirmButtonText: "Sim, delete agora!",
+  			  cancelButtonText: "Cancelar",
+			  showLoaderOnConfirm: true,
+			},
+			function(){
+			 $.post( "http://simuleagora.com/RemoverUsuario.php", { usuario_id: usuario_id })
+			  .done(function( data ) {
+			  		if(data.status == 'sucesso'){
+								  
+					    swal("O usuário "+nome+" foi removido.");
+				
+				  		$('#tabela').empty("");
+				  		getUsuarios();
+			  		}
+		    	  });
+			});
+
+			
+
+
 	}
 	$(document).ready(function(){
 
 
 		getUsuarios();
 
-		$("form").submit(function(){
-			var login = $("#login").val();
-		   var senha = $("#senha").val();
+		$("#formularioEditar").submit(function(){
+			var login = $("#loginEditar").val();
+		   var senha = $("#senhaEditar").val();
 			var usuario_id = $("#usuario_id").val();
 		   if(login == "" || senha == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
@@ -79,12 +108,35 @@
 			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
 			  		getUsuarios();
 			  		$('#modalEditar').modal('hide');  
+			  		$('#tabela').empty("");
 
 			  		}
 		   		});
 	 		event.preventDefault();
 		});
 
+		$("#formularioCadastro").submit(function(){
+		   var login = $("#loginCadastro").val();
+		   var senha = $("#senhaCadastro").val();
+			var usuario_id = $("#usuario_id").val();
+		   if(login == "" || senha == ""){
+		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
+		   	 event.preventDefault();
+		   	return 0;
+		   }
+		 
+		   $.post( "http://simuleagora.com/cadastrarUsuario.php", { login: login, senha: senha, usuario_id: usuario_id })
+			  .done(function( data ) {
+			  		if(data.status == 'sucesso'){
+			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
+			  		getUsuarios();
+			  		$('#modalCadastro').modal('hide');  
+			  		$('#tabela').empty("");
+
+			  		}
+		   		});
+	 		event.preventDefault();
+		 });
 
 	});
 	</script>
@@ -93,7 +145,7 @@
 		<div class="container">	
 				<div class="row">
 					<div class="col-md-6 col-md-offset-2" >
-					<a href="" class="btn btn-warning nigga">Novo Usuário</a><br><br>
+					<a href="" class="btn btn-warning nigga" onclick="cadastrar()">Novo Usuário</a><br><br>
 
 					<div class="table-responsive">
 							<table  class="table table-hover table-striped table-bordered">
@@ -118,22 +170,46 @@
 <div id="modalEditar" class="modal fade bs-example-modal-md fundomodal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel ">
   <div class="modal-dialog modal-md " role="document">
     <div class="modal-content ">
-      <form id="formulario" method="POST" >
-								<div class="col-md-12">
-									<div class="input-group">
-									  <label>Login</label>
-									  <input type="text" id="login" name="login" class="form-control" placeholder="Digite seu nome">
-									</div>
-									<div class="input-group">
-									  <label>Senha</label>
-									  <input type="password" id="senha" name="senha" class="form-control" value="123456" placeholder="Digite sua senha">
-									</div><br>
-									<input type="hidden" name="usuario_id" value="" id="usuario_id">
-									<input type="submit" name="Alterar" class="btn btn-primary">
-								</div>
+      <form id="formularioEditar" method="POST" >
+		<div class="col-md-12">
+			<div class="input-group">
+				<h1>Editar Cadastro</h1>
+			  <label>Login</label>
+			  <input type="text" id="loginEditar" name="login" class="form-control" placeholder="Digite seu nome">
+			</div>
+			<div class="input-group">
+			  <label>Senha</label>
+			  <input type="password" id="senhaEditar" name="senha" class="form-control" value="123456" placeholder="Digite sua senha">
+			</div><br>
+			<input type="hidden" name="usuario_id" value="" id="usuario_id">
+			<input type="submit" VALUE="Alterar" class="btn btn-primary">
+		</div>
 	</form>
     </div>
   </div>
 </div>
+
+<div id="modalCadastro" class="modal fade bs-example-modal-md fundomodal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel ">
+  <div class="modal-dialog modal-md " role="document">
+    <div class="modal-content ">
+      <form id="formularioCadastro" method="POST" >
+		<div class="col-md-12">
+			<h1>Cadastro</h1>
+			<div class="input-group">
+			  <label>Login</label>
+			  <input type="text" id="loginCadastro" name="login" class="form-control" placeholder="Digite seu nome">
+			</div>
+			<div class="input-group">
+			  <label>Senha</label>
+			  <input type="password" id="senhaCadastro" name="senha" class="form-control" value="" placeholder="Digite sua senha">
+			</div><br>
+			<input type="submit" VALUE="Cadastrar" class="btn btn-primary">
+		</div>
+	</form>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
