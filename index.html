@@ -10,19 +10,25 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="js/bootstrap.min.js" ></script>
 	<script src="js/sweetalert.min.js" ></script>
+	<script type="text/javascript" src="js/jsbn.js"></script>
+	<script type="text/javascript" src="js/prng4.js"></script>
+	<script type="text/javascript" src="js/rng.js"></script>
+	<script type="text/javascript" src="js/rsa.js"></script>
+	<script type="text/javascript" src="js/chave.js"></script>
+
 	<meta charset="utf-8">
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$("form").submit(function(){
-		   var login = $("#login").val();
+		   var login = $("#login").val()
 		   var senha = $("#senha").val();
 		   if(login == "" || senha == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
 		   	 return 0;
 		   }
-		 
-		   $.post( "http://simuleagora.com/checkLogin.php", { login: login, senha: senha })
+
+		   $.post( "https://chatrobot.com.br/crud/checkLogin.php", { login:  encrypt($("#login").val()), senha:  encrypt($("#senha").val()) })
 			  .done(function( data ) {
 			  		if(data.status == 'erro'){
 			  			sweetAlert("Oops...", "USUÁRIO OU SENHA INVÁLIDOS!", "error");
@@ -31,6 +37,7 @@
 			  			swal({   title: "SUCESSO!",   text: "Você será redirecionado em 3 segundos.",   timer: 3000,   showConfirmButton: false });
 			  			event.preventDefault();
 			  			setTimeout(function (self) { 
+			  				localStorage.setItem("logado", "true");
 							window.location.href = 'usuarios.html';
 					    }, 3000, this); 
 			  			
@@ -47,7 +54,7 @@
 				<div class="row">
 					<div class="col-md-6 col-md-offset-4" >
 							<div class="col-md-12">
-								<h3>Super Aplicação</h3>
+								<h3>Teste de Segurança</h3>
 							</div>
 							<form id="formulario" method="POST" >
 								<div class="col-md-8">

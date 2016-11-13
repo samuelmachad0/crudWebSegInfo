@@ -21,8 +21,17 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="js/bootstrap.min.js" ></script>
 	<script src="js/sweetalert.min.js" ></script>
+	<script type="text/javascript" src="js/jsbn.js"></script>
+	<script type="text/javascript" src="js/prng4.js"></script>
+	<script type="text/javascript" src="js/rng.js"></script>
+	<script type="text/javascript" src="js/rsa.js"></script>
+	<script type="text/javascript" src="js/chave.js"></script>
 	<meta charset="utf-8">
 	<script type="text/javascript">
+	// validação de usuário
+	if(!localStorage.getItem("logado")){
+		window.location.href = 'index.html';
+	}
 	function cadastrar(){
 		$("#loginCadastro").empty("");
 		$("#senhaCadastro").empty("");
@@ -32,7 +41,7 @@
 	function getUsuarios(){
 
 		$("#usuario_id").empty("");
-		 $.get( "http://simuleagora.com/listUsuarios.php")
+		 $.get( "https://chatrobot.com.br/crud/listUsuarios.php")
 			  .done(function( data ) {
 				$( data).each( function( index, data ) {
 				   $('#tabela').append(
@@ -71,7 +80,7 @@
 			  showLoaderOnConfirm: true,
 			},
 			function(){
-			 $.post( "http://simuleagora.com/RemoverUsuario.php", { usuario_id: usuario_id })
+			 $.post( "https://chatrobot.com.br/crud/RemoverUsuario.php", { usuario_id: encrypt(String(usuario_id)) })
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 								  
@@ -93,16 +102,16 @@
 		getUsuarios();
 
 		$("#formularioEditar").submit(function(){
-			var login = $("#loginEditar").val();
+		   var login = $("#loginEditar").val();
 		   var senha = $("#senhaEditar").val();
-			var usuario_id = $("#usuario_id").val();
+		   var usuario_id = $("#usuario_id").val();
 		   if(login == "" || senha == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
 		   	return 0;
 		   }
 		 
-		   $.post( "http://simuleagora.com/editUsuario.php", { login: login, senha: senha, usuario_id: usuario_id })
+		   $.post( "https://chatrobot.com.br/crud/editUsuario.php", { login: encrypt(login), senha: encrypt(senha), usuario_id: encrypt(usuario_id) })
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
@@ -125,7 +134,7 @@
 		   	return 0;
 		   }
 		 
-		   $.post( "http://simuleagora.com/cadastrarUsuario.php", { login: login, senha: senha, usuario_id: usuario_id })
+		   $.post( "https://chatrobot.com.br/crud/cadastrarUsuario.php", { login: encrypt(login), senha: encrypt(senha), usuario_id: encrypt(usuario_id) })
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
