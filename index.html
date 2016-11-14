@@ -34,10 +34,12 @@
 			  			sweetAlert("Oops...", "USUÁRIO OU SENHA INVÁLIDOS!", "error");
 		   	 			
 			  		} else {
+			  			console.log(data);
 			  			swal({   title: "SUCESSO!",   text: "Você será redirecionado em 3 segundos.",   timer: 3000,   showConfirmButton: false });
 			  			event.preventDefault();
 			  			setTimeout(function (self) { 
 			  				localStorage.setItem("logado", "true");
+			  				localStorage.setItem("token", data.token);
 							window.location.href = 'usuarios.html';
 					    }, 3000, this); 
 			  			

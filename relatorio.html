@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Página Web</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/sweetalert.css">
+		<link rel="stylesheet" href="css/font-awesome.css">
+	<style type="text/css">
+		.nigga {
+			color: black;
+		}
+		.cursor {
+			cursor: pointer;
+		}
+		.fundomodal{
+			background-color: white;
+		}
+	</style>
+	<script src="js/jquery-3.1.1.min.js" ></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="js/bootstrap.min.js" ></script>
+	<script src="js/sweetalert.min.js" ></script>
+	<script type="text/javascript" src="js/jsbn.js"></script>
+	<script type="text/javascript" src="js/prng4.js"></script>
+	<script type="text/javascript" src="js/rng.js"></script>
+	<script type="text/javascript" src="js/rsa.js"></script>
+	<script type="text/javascript" src="js/chave.js"></script>
+	<meta charset="utf-8">
+	<script type="text/javascript">
+	// validação de usuário
+	if(!localStorage.getItem("logado") || !localStorage.getItem("token")){
+		window.location.href = 'index.html';
+	}
+
+	function getRelatorios(){
+
+		$("#usuario_id").empty("");
+		 $.get( "https://chatrobot.com.br/crud/listRelatorios.php")
+			  .done(function( data ) {
+				$( data).each( function( index, data ) {
+				   $('#tabela').append(
+				   	'<tr> \
+				   		<td>'+data.id+'</td> \
+				   		<td>'+data.data+'</td> \
+				   		<td>'+data.usuario_id+'</td> \
+				   		<td>'+data.ip+'</td> \
+				   		<td>'+data.navegador+'</td> \
+				   		<td>'+data.so+'</td> \
+				   		<td>'+data.hostname+'</td> \
+				   		<td>'+data.cidade+'</td> \
+				   		<td>'+data.estado+'</td> \
+				   		<td>'+data.pais+'</td> \
+				   		<td>'+data.localizacao+'</td> \
+				   		<td>'+data.organizacao+'</td> \
+				   		<td>'+data.informacoes+'</td> \
+				   	</tr>');
+				});	 
+		   });
+
+	}
+	$(document).ready(function(){
+		getRelatorios();
+	});
+	</script>
+	</head>
+<body>
+		<div class="container">	
+				<div class="row">
+					<div class="col-md-12 col-lg-12 col-sm-12" >
+					<h1>Relatório de Atividades</h1>
+							<table  class="table table-hover table-striped table-bordered">
+
+								<tr>
+									<th>ID</th>
+									<th>Data</th>
+									<th>Usuário</th>
+									<th>IP</th>
+									<th>Navegador</th>
+									<th>Sistema Operacional</th>
+									<th>Hostname</th>
+									<th>Cidade</th>
+									<th>Estado</th>
+									<th>País</th>
+									<th>Lat/Long</th>
+									<th>Provedor</th>
+									<th>Informações</th>
+								</tr>
+								<tbody id="tabela">
+								</tbody>
+							</table>
+							</div>
+					</div>
+			
+		</div>	
+
+
+
+</body>
+</html>

@@ -29,7 +29,7 @@
 	<meta charset="utf-8">
 	<script type="text/javascript">
 	// validação de usuário
-	if(!localStorage.getItem("logado")){
+	if(!localStorage.getItem("logado") || !localStorage.getItem("token")){
 		window.location.href = 'index.html';
 	}
 	function cadastrar(){
@@ -80,7 +80,7 @@
 			  showLoaderOnConfirm: true,
 			},
 			function(){
-			 $.post( "https://chatrobot.com.br/crud/RemoverUsuario.php", { usuario_id: encrypt(String(usuario_id)) })
+			 $.post( "https://chatrobot.com.br/crud/RemoverUsuario.php", { usuario_id: encrypt(String(usuario_id)), token: encrypt(localStorage.getItem("token"))  })
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 								  

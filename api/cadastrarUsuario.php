@@ -3,8 +3,8 @@ require 'header.php';
 try{
   $sql = $pdo->prepare('INSERT INTO usuarios(login,senha) VALUES(:login,:senha)');
   $sql->execute(array(
-    ':login' => $_POST['login'],
-	':senha' => sha1($_POST['senha'])
+    ':login' => decrypt($_POST['login']),
+	':senha' => sha1( decrypt($_POST['senha']) )
   ));
   
     print json_encode(['status' => 'sucesso']);

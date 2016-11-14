@@ -1,5 +1,5 @@
 <?php
-require('phpseclib/Crypt/RSA.php');
+include('Crypt/RSA.php');
 
 define("KEY_PRIVATE", "
 -----BEGIN RSA PRIVATE KEY-----
