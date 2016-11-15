@@ -1,4 +1,11 @@
+var debugar = true; 
+function depurador(mensagem){
+	if(debugar){
+		console.log("=================\n"+mensagem+"\n=================")
+	}
+}
 function validaCampos(login,senha,telefone){
+   depurador("Validação de campos realizada");
    if(login == "" || senha == "" || telefone == ""){
 	   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 	   	event.preventDefault();
@@ -7,6 +14,7 @@ function validaCampos(login,senha,telefone){
 	return 1;
 }
 function verificarLogin(){
+	depurador("Verificação de Login");
 	if(!localStorage.getItem("logado") || !localStorage.getItem("token")){
 		window.location.href = 'index.html';
 	}
@@ -24,7 +32,7 @@ function preparaEditar(usuario_id,nome,telefone){
 		$("#senhaEditar").empty("");
 		$("#telefoneEditar").empty("");
 
-		console.log('Pediram pra eu editar o ' + usuario_id);
+		depurador("Foi solicitado a edição do usuário ID " + usuario_id);
 		$("#loginEditar").val(nome);
 		$("#usuario_id").val(usuario_id);
 		$("#senhaEditar").val("123456");
@@ -38,6 +46,7 @@ function getUsuarios(){
 	
 	 $.get( "https://chatrobot.com.br/crud/listUsuarios.php")
 		  .done(function( data ) {
+		  	depurador("Usuários carregados com sucesso!");
 		  	$("#tabela").empty("");
 			$( data).each( function( index, data ) {
 			   $('#tabela').append(
@@ -78,6 +87,7 @@ function getRelatorios(){
 $("#usuario_id").empty("");
  $.get( "https://chatrobot.com.br/crud/listRelatorios.php")
 	  .done(function( data ) {
+	  	depurador("Relatórios carregados com sucesso!");
 	  	$("#tabela").empty("");
 		$( data).each( function( index, data ) {
 		   $('#tabela').append(
@@ -112,6 +122,7 @@ function removerUsuario(usuario_id,nome){
 	  showLoaderOnConfirm: true,
 	},
 	function(){
+	depurador("Solicitação de Exclusão\nDados Puros:\nID: "+usuario_id+"\nToken: "+localStorage.getItem("token")+"\nDados Criptografados:\nID: "+encrypt(String(usuario_id))+"\nToken: "+encrypt(localStorage.getItem("token")));
 	 $.post( "https://chatrobot.com.br/crud/RemoverUsuario.php", {
 	  usuario_id: encrypt(String(usuario_id)),
 	   token: encrypt(localStorage.getItem("token"))  })
@@ -126,6 +137,7 @@ function removerUsuario(usuario_id,nome){
 }
 
 function editarUsuario(login,senha,telefone,usuario_id){
+ 	depurador("Solicitação de Edição\nDados Puros:\nID: "+usuario_id+"\nToken: "+localStorage.getItem("token")+"\nDados Criptografados:\nID: "+encrypt(String(usuario_id))+"\nToken: "+encrypt(localStorage.getItem("token")));
    $.post( "https://chatrobot.com.br/crud/editUsuario.php", { login: encrypt(login), 
    	senha: encrypt(senha),  token: encrypt(localStorage.getItem("token")),
    	telefone: encrypt(telefone), usuario_id: encrypt(usuario_id)  } )
@@ -141,6 +153,7 @@ function editarUsuario(login,senha,telefone,usuario_id){
 }
 
 function cadastroUsuario(login,senha,telefone,usuario_id){
+	depurador("Solicitação de Edição\nDados Puros:\nLogin: "+login+"\nToken: "+localStorage.getItem("token")+"\nDados Criptografados:\nLogin: "+encrypt(login)+"\nToken: "+encrypt(localStorage.getItem("token")));
 	$.post( "https://chatrobot.com.br/crud/cadastrarUsuario.php", { login: encrypt(login), senha: encrypt(senha), token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone)} )
 	.done(function( data ) {
 			if(data.status == 'sucesso'){
@@ -167,7 +180,7 @@ function loadMascaraTelefone(){
 }
 
 function tabelaPadrao(){
-	  $('#tabela').empty("");
+	 $('#tabela').empty("");
 	 $('#tabela').html('<tr> \
 							<td align="center" colspan="13"> \
 							<img width="100" height="50" src="img/loading.gif"> Carregando dados...  \
