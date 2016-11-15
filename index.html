@@ -15,30 +15,9 @@
 	<script type="text/javascript" src="js/rng.js"></script>
 	<script type="text/javascript" src="js/rsa.js"></script>
 	<script type="text/javascript" src="js/chave.js"></script>
-
+	<script type="text/javascript" src="js/crud.js"></script>
 	<meta charset="utf-8">
 	<script type="text/javascript">
-	function checkClear(usuario_id,token){
-	   $.post( "https://chatrobot.com.br/crud/checkClear.php", { usuario_id:  encrypt(usuario_id), token:  encrypt(token) })
-		  .done(function( response ) {
-		  		console.log(response);
-		  		if(response.status == 'sucesso'){
-		  		localStorage.setItem("logado", "true");
-				localStorage.setItem("token", token);
-				swal({
-				  title: "A validação foi um sucesso!",
-				  text: "Em instantes você será redirecionado.",
-				  timer: 3000,
-				  type: "success",
-				  showConfirmButton: false
-				});
-		  			setTimeout(function(){
-						window.location.href = 'usuarios.html';
-		  			 }, 2500);
-		  		} 
-
-		  		});
-	}
 	$(document).ready(function(){
 
 
@@ -52,7 +31,6 @@
 		   }
 		   $.post( "https://chatrobot.com.br/crud/checkLogin.php", { login:  encrypt($("#login").val()), senha:  encrypt($("#senha").val()) })
 			  .done(function( data ) {
-			  	console.log(data);
 			  		if(data.status == 'erro'){
 			  			sweetAlert("Oops...", "USUÁRIO OU SENHA INVÁLIDOS!", "error");
 		   	 			

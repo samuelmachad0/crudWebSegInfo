@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="css/sweetalert.css">
 		<link rel="stylesheet" href="css/font-awesome.css">
 	<style type="text/css">
-		.nigga {
+		.buttonFont {
 			color: black;
 		}
 		.cursor {
@@ -28,96 +28,13 @@
 	<script type="text/javascript" src="js/rng.js"></script>
 	<script type="text/javascript" src="js/rsa.js"></script>
 	<script type="text/javascript" src="js/chave.js"></script>
+	<script type="text/javascript" src="js/crud.js"></script>
 	<meta charset="utf-8">
 	<script type="text/javascript">
 	// validação de usuário
-	if(!localStorage.getItem("logado") || !localStorage.getItem("token")){
-		window.location.href = 'index.html';
-	}
-	function loadMask(){
-		var SPMaskBehavior = function (val) {
-	      return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
-	    },
-	    spOptions = {
-	      onKeyPress: function(val, e, field, options) {
-	          field.mask(SPMaskBehavior.apply({}, arguments), options);
-	        }
-	    };
-
-	    $('.sp_celphones').mask(SPMaskBehavior, spOptions);
-	}
-	function cadastrar(){
-		$("#loginCadastro").empty("");
-		$("#senhaCadastro").empty("");
-		$('#modalCadastro').modal('show'); 
-		 event.preventDefault();
-	}
-	function getUsuarios(){
-
-		$("#usuario_id").empty("");
-		 $.get( "https://chatrobot.com.br/crud/listUsuarios.php")
-			  .done(function( data ) {
-				$( data).each( function( index, data ) {
-				   $('#tabela').append(
-				   	'<tr> \
-				   		<td>'+data.usuario_id+'</td> \
-				   		<td>'+data.nome+'</td> \
-				   		<td>'+data.telefone+'</td> \
-				   		<td> \
-				   			<i onclick=editar('+data.usuario_id+',"'+data.nome+'","'+data.telefone+'") class="fa fa-pencil-square-o fa-2x cursor" aria-hidden="true"> \
-				   			</i>        <i class="fa fa-trash fa-2x cursor" onclick=remover('+data.usuario_id+',"'+data.nome+'") aria-hidden="true"></i> \
-				   		</td> \
-				   	</tr>');
-				});	 
-		   });
-
-	}
-	function editar(usuario_id,nome,telefone){
-	
-		$("#loginEditar").empty("");
-		$("#senhaEditar").empty("");
-		$("#telefoneEditar").empty("");
-
-		console.log('Pediram pra eu editar o ' + usuario_id);
-		$("#loginEditar").val(nome);
-		$("#usuario_id").val(usuario_id);
-		$("#senhaEditar").val("123456");
-		loadMask();
-		$("#telefoneEditar").val(telefone);
-		
-		$('#modalEditar').modal('show'); 
-	}
-	function remover(usuario_id,nome){
-			swal({
-			  title: "Quer mesmo remover o usuário "+nome+" ?",
-			  text: "Não será possível recuperar este registro",
-			  type: "warning",
-			  showCancelButton: true,
-			  closeOnConfirm: false,
-			  confirmButtonText: "Sim, delete agora!",
-  			  cancelButtonText: "Cancelar",
-			  showLoaderOnConfirm: true,
-			},
-			function(){
-			 $.post( "https://chatrobot.com.br/crud/RemoverUsuario.php", { usuario_id: encrypt(String(usuario_id)), token: encrypt(localStorage.getItem("token"))  })
-			  .done(function( data ) {
-			  		if(data.status == 'sucesso'){
-								  
-					    swal("O usuário "+nome+" foi removido.");
-				
-				  		$('#tabela').empty("");
-				  		getUsuarios();
-			  		}
-		    	  });
-			});
-
-			
-
-
-	}
+	verificarLogin();
 	$(document).ready(function(){
-
-
+		
 		getUsuarios();
 
 		$("#formularioEditar").submit(function(){
@@ -125,23 +42,9 @@
 		   var senha = $("#senhaEditar").val();
 		   var telefone = $("#telefoneEditar").val();
 		   var usuario_id = $("#usuario_id").val();
-		   if(login == "" || senha == "" || telefone == ""){
-		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
-		   	 event.preventDefault();
-		   	return 0;
-		   }
-
-		   $.post( "https://chatrobot.com.br/crud/editUsuario.php", { login: encrypt(login), senha: encrypt(senha),  token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone), usuario_id: encrypt(usuario_id)  } )
-			  .done(function( data ) {
-			  		if(data.status == 'sucesso'){
-			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
-			  		getUsuarios();
-			  		$('#modalEditar').modal('hide');  
-			  		$('#tabela').empty("");
-
-			  		}
-		   		});
-	 		event.preventDefault();
+		   if(validaCampos(login,senha,telefone) == 1)
+		   		editarUsuario(login,senha,telefone,usuario_id)
+	 	   event.preventDefault();
 		});
       
 		$("#formularioCadastro").submit(function(){
@@ -149,22 +52,8 @@
 		   var senha = $("#senhaCadastro").val();
 		   var telefone = $("#telefoneCadastro").val();
 		   var usuario_id = $("#usuario_id").val();
-		   if(login == "" || senha == "" || telefone == ""){
-		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
-		   	 event.preventDefault();
-		   	return 0;
-		   }
-		  console.log({ login: encrypt(login), senha: encrypt(senha), token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone)});
-		   $.post( "https://chatrobot.com.br/crud/cadastrarUsuario.php", { login: encrypt(login), senha: encrypt(senha), token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone)} )
-			  .done(function( data ) {
-			  		if(data.status == 'sucesso'){
-			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
-			  		getUsuarios();
-			  		$('#modalCadastro').modal('hide');  
-			  		$('#tabela').empty("");
-
-			  		}
-		   		});
+		   if(validaCampos(login,senha,telefone) == 1)
+				cadastroUsuario(login,senha,telefone,usuario_id);
 	 		event.preventDefault();
 		 });
 
@@ -175,10 +64,10 @@
 		<div class="container">	
 				<div class="row">
 					<div class="col-md-6 col-md-offset-2" >
-					<a href="" class="btn btn-warning nigga" onclick="cadastrar()">Novo Usuário</a><br><br>
+					<a href="" class="btn btn-warning buttonFont" onclick="preparaCadastrar()">Novo Usuário</a><br><br>
 
 					<div class="table-responsive">
-							<table  class="table table-hover table-striped table-bordered">
+							<table  class="table table-hover table-bordered">
 
 								<tr>
 									<th>ID</th>
@@ -187,6 +76,9 @@
 									<th>Ação</th>
 								</tr>
 								<tbody id="tabela">
+								<tr>
+									<td align="center" colspan="4"><img width="100" height="50" src="img/loading.gif"> Carregando dados... </td>
+								</tr>
 								</tbody>
 							</table>
 							</div>
