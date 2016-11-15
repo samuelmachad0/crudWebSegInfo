@@ -21,6 +21,8 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="js/bootstrap.min.js" ></script>
 	<script src="js/sweetalert.min.js" ></script>
+	<script type="text/javascript" src="js/jquery.mask.min.js"></script>
+
 	<script type="text/javascript" src="js/jsbn.js"></script>
 	<script type="text/javascript" src="js/prng4.js"></script>
 	<script type="text/javascript" src="js/rng.js"></script>
@@ -31,6 +33,18 @@
 	// validação de usuário
 	if(!localStorage.getItem("logado") || !localStorage.getItem("token")){
 		window.location.href = 'index.html';
+	}
+	function loadMask(){
+		var SPMaskBehavior = function (val) {
+	      return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+	    },
+	    spOptions = {
+	      onKeyPress: function(val, e, field, options) {
+	          field.mask(SPMaskBehavior.apply({}, arguments), options);
+	        }
+	    };
+
+	    $('.sp_celphones').mask(SPMaskBehavior, spOptions);
 	}
 	function cadastrar(){
 		$("#loginCadastro").empty("");
@@ -48,8 +62,9 @@
 				   	'<tr> \
 				   		<td>'+data.usuario_id+'</td> \
 				   		<td>'+data.nome+'</td> \
+				   		<td>'+data.telefone+'</td> \
 				   		<td> \
-				   			<i onclick=editar('+data.usuario_id+',"'+data.nome+'") class="fa fa-pencil-square-o fa-2x cursor" aria-hidden="true"> \
+				   			<i onclick=editar('+data.usuario_id+',"'+data.nome+'","'+data.telefone+'") class="fa fa-pencil-square-o fa-2x cursor" aria-hidden="true"> \
 				   			</i>        <i class="fa fa-trash fa-2x cursor" onclick=remover('+data.usuario_id+',"'+data.nome+'") aria-hidden="true"></i> \
 				   		</td> \
 				   	</tr>');
@@ -57,15 +72,19 @@
 		   });
 
 	}
-	function editar(usuario_id,nome){
+	function editar(usuario_id,nome,telefone){
 	
 		$("#loginEditar").empty("");
 		$("#senhaEditar").empty("");
+		$("#telefoneEditar").empty("");
 
 		console.log('Pediram pra eu editar o ' + usuario_id);
 		$("#loginEditar").val(nome);
 		$("#usuario_id").val(usuario_id);
 		$("#senhaEditar").val("123456");
+		loadMask();
+		$("#telefoneEditar").val(telefone);
+		
 		$('#modalEditar').modal('show'); 
 	}
 	function remover(usuario_id,nome){
@@ -104,14 +123,15 @@
 		$("#formularioEditar").submit(function(){
 		   var login = $("#loginEditar").val();
 		   var senha = $("#senhaEditar").val();
+		   var telefone = $("#telefoneEditar").val();
 		   var usuario_id = $("#usuario_id").val();
-		   if(login == "" || senha == ""){
+		   if(login == "" || senha == "" || telefone == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
 		   	return 0;
 		   }
-		 
-		   $.post( "https://chatrobot.com.br/crud/editUsuario.php", { login: encrypt(login), senha: encrypt(senha), usuario_id: encrypt(usuario_id) })
+
+		   $.post( "https://chatrobot.com.br/crud/editUsuario.php", { login: encrypt(login), senha: encrypt(senha),  token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone), usuario_id: encrypt(usuario_id)  } )
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
@@ -127,14 +147,15 @@
 		$("#formularioCadastro").submit(function(){
 		   var login = $("#loginCadastro").val();
 		   var senha = $("#senhaCadastro").val();
-			var usuario_id = $("#usuario_id").val();
-		   if(login == "" || senha == ""){
+		   var telefone = $("#telefoneCadastro").val();
+		   var usuario_id = $("#usuario_id").val();
+		   if(login == "" || senha == "" || telefone == ""){
 		   	sweetAlert("Oops...", "PREENCHA DIREITINHO AMIGO!", "error");
 		   	 event.preventDefault();
 		   	return 0;
 		   }
-		 
-		   $.post( "https://chatrobot.com.br/crud/cadastrarUsuario.php", { login: encrypt(login), senha: encrypt(senha), usuario_id: encrypt(usuario_id) })
+		  console.log({ login: encrypt(login), senha: encrypt(senha), token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone)});
+		   $.post( "https://chatrobot.com.br/crud/cadastrarUsuario.php", { login: encrypt(login), senha: encrypt(senha), token: encrypt(localStorage.getItem("token")) , telefone: encrypt(telefone)} )
 			  .done(function( data ) {
 			  		if(data.status == 'sucesso'){
 			  		swal({   title: "SUCESSO!",   text: "Você será redirecionado em 2,5 segundos.",   timer: 2500,   showConfirmButton: false });
@@ -162,6 +183,7 @@
 								<tr>
 									<th>ID</th>
 									<th>Nome</th>
+									<th>Telefone</th>
 									<th>Ação</th>
 								</tr>
 								<tbody id="tabela">
@@ -190,6 +212,10 @@
 			  <label>Senha</label>
 			  <input type="password" id="senhaEditar" name="senha" class="form-control" value="123456" placeholder="Digite sua senha">
 			</div><br>
+			 <div class="input-group">
+			  <label>Celular</label>
+			  <input type="text" id="telefoneEditar" name="telefone" class="form-control sp_celphones" value="" placeholder="Digite seu telefone">
+			</div><br>
 			<input type="hidden" name="usuario_id" value="" id="usuario_id">
 			<input type="submit" VALUE="Alterar" class="btn btn-primary">
 		</div>
@@ -207,11 +233,16 @@
 			<div class="input-group">
 			  <label>Login</label>
 			  <input type="text" id="loginCadastro" name="login" class="form-control" placeholder="Digite seu nome">
-			</div>
+			</div><br>
 			<div class="input-group">
 			  <label>Senha</label>
 			  <input type="password" id="senhaCadastro" name="senha" class="form-control" value="" placeholder="Digite sua senha">
 			</div><br>
+			<div class="input-group">
+			  <label>Celular</label>
+			  <input type="text" id="telefoneCadastro" name="telefone" class="form-control sp_celphones" value="" placeholder="Digite seu telefone">
+			</div><br>
+
 			<input type="submit" VALUE="Cadastrar" class="btn btn-primary">
 		</div>
 	</form>

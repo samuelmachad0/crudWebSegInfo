@@ -18,7 +18,30 @@
 
 	<meta charset="utf-8">
 	<script type="text/javascript">
+	function checkClear(usuario_id,token){
+	   $.post( "https://chatrobot.com.br/crud/checkClear.php", { usuario_id:  encrypt(usuario_id), token:  encrypt(token) })
+		  .done(function( response ) {
+		  		console.log(response);
+		  		if(response.status == 'sucesso'){
+		  		localStorage.setItem("logado", "true");
+				localStorage.setItem("token", token);
+				swal({
+				  title: "A validação foi um sucesso!",
+				  text: "Em instantes você será redirecionado.",
+				  timer: 3000,
+				  type: "success",
+				  showConfirmButton: false
+				});
+		  			setTimeout(function(){
+						window.location.href = 'usuarios.html';
+		  			 }, 2500);
+		  		} 
+
+		  		});
+	}
 	$(document).ready(function(){
+
+
 		$("form").submit(function(){
 		   var login = $("#login").val()
 		   var senha = $("#senha").val();
@@ -27,21 +50,19 @@
 		   	 event.preventDefault();
 		   	 return 0;
 		   }
-
 		   $.post( "https://chatrobot.com.br/crud/checkLogin.php", { login:  encrypt($("#login").val()), senha:  encrypt($("#senha").val()) })
 			  .done(function( data ) {
+			  	console.log(data);
 			  		if(data.status == 'erro'){
 			  			sweetAlert("Oops...", "USUÁRIO OU SENHA INVÁLIDOS!", "error");
 		   	 			
 			  		} else {
-			  			console.log(data);
-			  			swal({   title: "SUCESSO!",   text: "Você será redirecionado em 3 segundos.",   timer: 3000,   showConfirmButton: false });
+		
+			  			swal({   title: "Verificação em 2 Etapas!",   text: "Envie seu contato para o nosso bot no telegram <a href='https://telegram.me/validatorbot' target='_new'>@validatorbot</a> para validar seu acesso",   timer: 99999,   showConfirmButton: false, html:true });
 			  			event.preventDefault();
-			  			setTimeout(function (self) { 
-			  				localStorage.setItem("logado", "true");
-			  				localStorage.setItem("token", data.token);
-							window.location.href = 'usuarios.html';
-					    }, 3000, this); 
+			  			var intervalo = window.setInterval(function() {
+								checkClear(data.usuario_id,data.token);
+						}, 1000);
 			  			
 			  		}
 			   	   
@@ -62,7 +83,7 @@
 								<div class="col-md-8">
 									<div class="input-group">
 									  <label>Login</label>
-									  <input type="text" id="login" name="login" class="form-control" placeholder="Digite seu nome">
+									  <input type="text" id="login" name="login" autocomplete="off" class="form-control" placeholder="Digite seu nome">
 									</div>
 									<div class="input-group">
 									  <label>Senha</label>
